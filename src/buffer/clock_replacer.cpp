@@ -55,11 +55,22 @@ auto ClockReplacer::Victim(frame_id_t *frame_id) -> bool {
     return true;
 }
 void ClockReplacer::Pin(frame_id_t frame_id) {
-    const std::
+    const std::lock_guard<mutex_t> guard(mutex_);
+    circular_[frame_id%capacity_]=ClockReplacer::Status::EMPTY;
+
 }
 
-void ClockReplacer::Unpin(frame_id_t frame_id) {}
+void ClockReplacer::Unpin(frame_id_t frame_id) {
+    const std::lock_guard<mutex_t> guard(mutex_);
+    circular_[frame_id%capacity_]=ClockReplacer::Status::ACCESSED;
 
-auto ClockReplacer::Size() -> size_t { return 0; }
+}
 
+auto ClockReplacer::Size() -> size_t {
+    const std::lock_guard<mutex_t> guard(mutex_);
+
+    return std::count_if(circular_.begin(), circular_.end(),
+                       [](ClockReplacer::Status status) { return status != ClockReplacer::Status::EMPTY; });
+
+}
 }  // namespace bustub
