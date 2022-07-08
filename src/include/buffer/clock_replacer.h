@@ -21,11 +21,15 @@
 
 namespace bustub {
 
+using mutex_t = std::mutex;// @@@@@@?using
+// using bustub::frsme_id_t = int32
+
 /**
- * ClockReplacer implements the clock replacement policy, which approximates the Least Recently Used policy.
+ * Cloc8kReplacer implements the clock replacement policy, which approximates the Least Recently Used policy.
  */
 class ClockReplacer : public Replacer {
  public:
+  enum class Status {EMPTY, ACCESSED, UNTOUCHED};
   /**
    * Create a new ClockReplacer.
    * @param num_pages the maximum number of pages the ClockReplacer will be required to store
@@ -47,6 +51,10 @@ class ClockReplacer : public Replacer {
 
  private:
   // TODO(student): implement me!
+  std::vector<Status> circular_;
+  frame_id_t hand_{0};
+  size_t capacity_;
+  mutex_t mutex_;
 };
 
 }  // namespace bustub
